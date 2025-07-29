@@ -1,0 +1,28 @@
+// src/assets/styles/_mixin.scss
+
+// 优化后的毛玻璃效果 mixin
+@mixin frosted-glass(
+  $bg-color: var(--app-glass-bg-color),
+  $blur: 16px,
+  $saturate: 180%
+) {
+  // backdrop-filter 是实现毛玻璃效果的核心
+  -webkit-backdrop-filter: saturate($saturate) blur($blur);
+  backdrop-filter: saturate($saturate) blur($blur);
+
+  // 背景色是决定整体色调和质感的关键
+  background-color: $bg-color;
+}
+
+// 精致的边框 mixin
+@mixin elegant-border(
+  $border-color: var(--app-border-color),
+  $border-width: 1px
+) {
+  border: $border-width solid $border-color;
+}
+
+// 柔和的阴影 mixin
+@mixin soft-shadow($shadow-color: var(--app-shadow-color)) {
+  box-shadow: 0 8px 32px 0 $shadow-color;
+}

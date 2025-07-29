@@ -1,0 +1,197 @@
+@use "./dark";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// 先定义亮色模式下的 CSS 变量
+:root {
+  // -- 调整后的毛玻璃相关颜色 (亮色) --
+  // 背景色：白色，但透明度降低，让背景透出更多
+  --app-glass-bg-color: rgba(255, 255, 255, 0.45);
+  // 文字颜色：更深的灰色，对比度更高
+  --app-glass-text-color: #1a1a1a;
+  // 边框颜色：非常淡的白色，几乎不可见，但在复杂背景上能起到分割作用
+  --app-border-color: rgba(255, 255, 255, 0.18);
+  // 阴影颜色：柔和的黑色阴影
+  --app-shadow-color: rgba(31, 38, 135, 0.1);
+  // 主内容区背景色：可以更透明一些
+  --app-content-bg-color: rgba(245, 247, 250, 0.6);
+
+  // -- 新增滚动条颜色变量 (亮色主题) --
+  --scrollbar-track-color: rgba(245, 245, 245, 0.1); // 滚动条轨道颜色
+  --scrollbar-thumb-color: rgba(193, 193, 193, 0.5); // 滚动条滑块颜色
+  --scrollbar-thumb-hover-color: rgba(
+    168,
+    168,
+    168,
+    0.5
+  ); // 滚动条滑块鼠标悬浮时颜色
+}
+
+// --- 全局重置和基础样式 ---
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  // 应用背景图
+  background-image: url("../images/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+#app {
+  height: 100vh;
+  width: 100vw;
+}
+
+// --- Element Plus 样式覆盖 ---
+/* 我们希望菜单也是毛玻璃效果 */
+.el-menu {
+  border-right: none !important;
+  background-color: transparent !important;
+}
+
+/* 菜单激活时文字颜色跟随主题色 */
+.el-menu-item.is-active {
+  color: var(--el-color-primary) !important;
+}
+
+/* 弹出框/抽屉等也是毛玻璃 */
+.el-overlay-dialog,
+.el-drawer__body {
+  .el-dialog,
+  .el-drawer__header,
+  .el-drawer__body {
+    @include frosted-glass;
+    background-color: var(--app-glass-bg-color) !important;
+  }
+}
+
+// --- 全局滚动条样式 ---
+/* 适用于 Webkit 内核浏览器 (Chrome, Safari, Edge, etc.) */
+::-webkit-scrollbar {
+  width: 8px; /* 滚动条宽度 */
+  height: 8px; /* 水平滚动条高度 */
+}
+
+/* 滚动条轨道 */
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color);
+  border-radius: 10px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color);
+  border-radius: 10px;
+  transition: background 0.3s ease-in-out;
+}
+
+/* 鼠标悬浮在滑块上 */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-color);
+}
+
+/* 适用于 Firefox */
+/* 
+  Firefox 的滚动条定制性较弱，只能设置宽度和颜色
+  'auto' 或 'thin'
+  <scrollbar-color> <scrollbar-track-color>
+*/
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+}
+
+/*
+ * ===================================================================
+ * 统一样式，适配主题风格的 Icon Button
+ * 这段代码将美化所有在布局中使用的 el-button (circle)
+ * ===================================================================
+ */
+:global(.el-button.is-circle) {
+  // 应用毛玻璃效果，并使用我们定义的 CSS 变量作为背景色
+  // 这里的 blur 值可以小一点，让按钮更精致
+  @include frosted-glass(var(--app-glass-bg-color), 8px);
+
+  // 使用我们定义的边框颜色，并覆盖 Element Plus 的默认样式
+  border: 1px solid var(--app-border-color) !important;
+
+  // 给按钮一个非常柔和的阴影，增加立体感
+  box-shadow: 0 1px 4px var(--app-shadow-color);
+
+  // 默认状态下的图标颜色
+  .el-icon {
+    color: var(--app-glass-text-color);
+    transition: color 0.2s ease-in-out; // 添加平滑的颜色过渡
+  }
+
+  // --- 鼠标悬浮和聚焦状态 ---
+  &:hover,
+  &:focus {
+    // 使用我们之前在 settings.js 中为菜单定义的、带透明度的主题色作为背景
+    // 这样可以确保 hover 颜色与菜单 hover 效果一致
+    background-color: var(--el-menu-hover-bg-color) !important;
+
+    // hover 时边框也使用主题色
+    border-color: var(--el-color-primary) !important;
+
+    // hover 时图标也使用主题色
+    .el-icon {
+      color: var(--el-color-primary) !important;
+    }
+  }
+}
+
+/*
+ * ===================================================================
+ * 优化 El-Menu Hover 效果 - 柔和光晕
+ * 使用径向渐变代替纯色背景，使其更符合毛玻璃的通透感
+ * ===================================================================
+ */
+
+// 我们只修改【未被激活】的菜单项的 hover 效果
+:global(.el-menu-item:not(.is-active):hover),
+:global(.el-sub-menu__title:not(.is-active):hover) {
+  // 1. 先将基础背景色设为透明，为我们的渐变背景做准备
+  background-color: transparent !important;
+
+  // 2. 使用径向渐变创建光晕效果
+  //    - 从中心点(circle at center)开始
+  //    - 由我们之前在 settings.js 中定义的 --el-menu-hover-bg-color (它本身就带透明度)
+  //    - 平滑地渐变到完全透明 (transparent)
+  //    - 75% 表示光晕的范围，值越小光晕越集中
+  background-image: radial-gradient(
+    circle at center,
+    var(--el-menu-hover-bg-color) 0%,
+    transparent 75%
+  ) !important;
+
+  // 3. 确保 hover 时的文字颜色依然是我们定义的主文字色
+  color: var(--app-glass-text-color) !important;
+}
+
+// 确保【已被激活】的菜单项样式明确，且不受 hover 光晕影响
+:global(.el-menu-item.is-active) {
+  // 1. 激活时，不应有光晕效果
+  background-image: none !important;
+
+  // 2. 我们可以给激活项一个极淡的、固定的背景色，以将它与普通项区分开
+  //    这里我们巧妙地利用主题色的 HSL 值，只取其色相，然后给一个很低的透明度
+  background-color: hsla(
+    var(--el-color-primary-hue, 210),
+    var(--el-color-primary-saturation, 100%),
+    var(--el-color-primary-lightness, 50%),
+    0.1
+  ) !important;
+
+  // 3. 激活项的文字颜色必须是主题色，这是最重要的区分标志
+  color: var(--el-color-primary) !important;
+}

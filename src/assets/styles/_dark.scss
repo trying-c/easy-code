@@ -1,0 +1,20 @@
+// src/assets/styles/_dark.scss
+// 当 html 标签有 data-theme="dark" 属性时生效
+html[data-theme="dark"] {
+  // -- 调整后的毛玻璃相关颜色 (暗色) --
+  // 背景色：深灰色，适当透明
+  --app-glass-bg-color: rgba(20, 20, 20, 0.5);
+  // 文字颜色：更亮的灰色，保证可读性
+  --app-glass-text-color: rgba(255, 255, 255, 0.87);
+  // 边框颜色：非常淡的灰色，起到分割作用
+  --app-border-color: rgba(255, 255, 255, 0.12);
+  // 阴影颜色：几乎不可见的深色阴影，增加层次感
+  --app-shadow-color: rgba(0, 0, 0, 0.2);
+  // 主内容区背景色：可以更透明一些
+  --app-content-bg-color: rgba(26, 26, 26, 0.7);
+
+  // -- 新增滚动条颜色变量 (暗色主题) --
+  --scrollbar-track-color: rgba(0, 0, 0, 0.1);
+  --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.3);
+}
