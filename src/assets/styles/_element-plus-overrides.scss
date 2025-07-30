@@ -1,0 +1,331 @@
+// src/assets/styles/_element-plus-overrides.scss
+// -------------------------------------------------------------------
+// Element Plus 全局组件样式覆盖
+// 旨在将所有组件统一到 "毛玻璃 (Glassmorphism)" 主题风格下
+// -------------------------------------------------------------------
+
+// 引入我们可复用的 mixin，并使用 'm' 作为命名空间，避免冲突
+@use "./mixin" as m;
+
+/*
+ * ===================================================================
+ * 1. 基础容器与面板 (Card, Popover, Tooltip)
+ * 这些是构成布局和信息展示的基础，需要最纯粹的毛玻璃效果。
+ * ===================================================================
+ */
+
+// --- 卡片 (el-card) ---
+.el-card {
+  // 复用你的 mixin，实现核心视觉风格
+  @include m.frosted-glass;
+  @include m.elegant-border;
+  @include m.soft-shadow;
+
+  // 卡片本身背景透明，让 mixin 的背景色生效
+  background-color: transparent !important;
+
+  // 统一内部文字颜色
+  .el-card__header,
+  .el-card__body {
+    color: var(--app-glass-text-color);
+  }
+
+  // 卡片头部的下边框，使用主题边框色
+  .el-card__header {
+    border-bottom: 1px solid var(--app-border-color);
+  }
+}
+
+// --- 弹出框 (el-popover) / 提示框 (el-tooltip) ---
+// 使用 .el-popper 选择器可以同时覆盖 Popover, Tooltip, Select-Dropdown 等所有弹出层
+// .el-popper {
+//   @include m.frosted-glass;
+//   @include m.elegant-border(var(--app-border-color), 1px);
+//   @include m.soft-shadow;
+
+//   background: transparent !important; // 必须！让 mixin 生效
+
+//   // 覆盖箭头样式，使其与 popper 背景色一致
+//   .el-popper__arrow::before {
+//     background: var(--app-glass-bg-color) !important;
+//     border: 1px solid var(--app-border-color);
+//     border-right-color: transparent !important;
+//     border-bottom-color: transparent !important;
+//   }
+// }
+
+/*
+ * ===================================================================
+ * 2. 表单组件 (Form Components)
+ * 交互的核心，需要清晰的视觉反馈 (hover, focus)。
+ * ===================================================================
+ */
+
+// --- 输入框 (el-input), 选择器 (el-select), 级联 (el-cascader) 等 ---
+// .el-input__wrapper 是新版 Element Plus 的核心样式类
+.el-input__wrapper {
+  // 使用一个更精致、模糊度更低的玻璃效果
+  @include m.frosted-glass(var(--app-input-bg-color), 8px);
+  @include m.elegant-border;
+  box-shadow: none !important; // 移除默认的 focus 阴影，我们将用边框代替
+  transition: border-color var(--transition-duration) ease,
+    box-shadow var(--transition-duration) ease;
+
+  // 内部文字颜色
+  .el-input__inner {
+    color: var(--app-glass-text-color);
+  }
+
+  // 悬浮状态：边框变为主题色的浅色变体
+  &:hover {
+    border-color: var(--el-color-primary-light-3);
+  }
+
+  // 聚焦状态：边框变为主题色，提供清晰的视觉反馈
+  &.is-focus {
+    border-color: var(--el-color-primary) !important;
+  }
+}
+
+// --- 开关 (el-switch) ---
+.el-switch {
+  // "关闭"状态下的背景
+  .el-switch__core {
+    @include m.frosted-glass(rgba(128, 128, 128, 0.2), 4px);
+    @include m.elegant-border;
+  }
+  // "开启"状态下的背景
+  &.is-checked .el-switch__core {
+    background-color: var(--el-color-primary);
+    border-color: var(--el-color-primary);
+  }
+}
+
+/*
+ * ===================================================================
+ * 3. 数据展示 (Table, Tag, Pagination)
+ * 重点在于信息的可读性和层次感。
+ * ===================================================================
+ */
+
+// --- 表格 (el-table) ---
+.el-table {
+  // 给整个表格容器应用玻璃效果
+  @include m.frosted-glass;
+  background-color: transparent !important;
+
+  // 表头：为了可读性，背景更“实”一些，并有清晰的下边框
+  thead th {
+    background-color: var(
+      --app-input-bg-color
+    ) !important; // 复用 input 的背景色
+    color: var(--app-glass-text-color) !important;
+    border-bottom: 1px solid var(--app-border-color) !important;
+  }
+
+  // 表格行
+  tr {
+    background-color: transparent !important; // 行背景透明，才能透出容器的玻璃效果
+    color: var(--app-glass-text-color);
+
+    // 悬浮行：提供柔和的背景高亮，使用主题色的极淡变体
+    &:hover > td {
+      background-color: hsla(
+        var(--el-color-primary-hue, 210),
+        var(--el-color-primary-saturation, 100%),
+        var(--el-color-primary-lightness, 50%),
+        0.1
+      ) !important;
+    }
+  }
+
+  // 移除默认的单元格边框，让视觉更干净
+  &.el-table--border,
+  .el-table--group {
+    border: 1px solid var(--app-border-color);
+  }
+  td,
+  th.is-leaf {
+    border-bottom: 1px solid var(--app-border-color);
+  }
+  &::before,
+  &::after {
+    // 移除表格底部和右侧的伪元素边框
+    background-color: transparent;
+  }
+}
+
+// --- 标签 (el-tag) ---
+.el-tag {
+  @include m.frosted-glass(var(--app-input-bg-color), 4px);
+  @include m.elegant-border;
+  color: var(--app-glass-text-color) !important;
+  background-color: transparent !important;
+
+  // 对不同类型的标签进行颜色适配
+  &.el-tag--success {
+    border-color: var(--el-color-success-light-5);
+  }
+  &.el-tag--warning {
+    border-color: var(--el-color-warning-light-5);
+  }
+  &.el-tag--danger {
+    border-color: var(--el-color-danger-light-5);
+  }
+}
+
+// --- 分页 (el-pagination) ---
+.el-pagination {
+  // 整体透明，融入背景
+  background: transparent !important;
+  color: var(--app-glass-text-color);
+
+  // 按钮和页码项
+  .btn-prev,
+  .btn-next,
+  .el-pager li {
+    @include m.frosted-glass(var(--app-input-bg-color), 4px);
+    @include m.elegant-border;
+    color: var(--app-glass-text-color) !important;
+    background: transparent;
+
+    &:hover {
+      border-color: var(--el-color-primary) !important;
+      color: var(--el-color-primary) !important;
+    }
+
+    // 当前激活的页码
+    &.is-active {
+      background-color: var(--el-color-primary) !important;
+      color: #fff !important;
+      border-color: var(--el-color-primary) !important;
+    }
+  }
+}
+
+/*
+ * ===================================================================
+ * 4. 导航组件 (Tabs, Breadcrumb)
+ * 引导用户，需要清晰的当前状态指示。
+ * ===================================================================
+ */
+
+// --- 标签页 (el-tabs) ---
+.el-tabs {
+  // 卡片式标签页的头部
+  &.el-tabs--card > .el-tabs__header {
+    border-bottom: 1px solid var(--app-border-color);
+  }
+
+  .el-tabs__item {
+    color: var(--app-glass-text-color);
+    // 悬浮时，底部有主题色指示器
+    &:hover {
+      color: var(--el-color-primary);
+    }
+    // 激活时，颜色为主题色
+    &.is-active {
+      color: var(--el-color-primary);
+    }
+  }
+
+  .el-tabs__nav-wrap::after {
+    // 移除默认的下边框
+    background-color: transparent;
+  }
+}
+
+// --- 面包屑 (el-breadcrumb) ---
+.el-breadcrumb {
+  .el-breadcrumb__inner,
+  .el-breadcrumb__separator {
+    color: var(--app-glass-text-color);
+  }
+  .el-breadcrumb__item:last-child .el-breadcrumb__inner {
+    color: var(--app-glass-text-color); // 最后一项文字颜色可以加重
+    font-weight: 600;
+  }
+}
+// src/assets/styles/_element-plus-overrides.scss
+
+/*
+ * ===================================================================
+ * 5. 模态组件 (Dialog, Drawer) - 最终高优先级覆盖版
+ * 专门用于覆盖无法修改的、存在于依赖包内的高优先级样式
+ * ===================================================================
+ */
+
+// 1. **统一处理遮罩层** (这部分通常没问题，保持不变)
+.el-overlay {
+  @include m.frosted-glass($bg-color: var(--app-overlay-bg-color), $blur: 16px);
+  border-radius: var(--app-border-radius-lg, 12px) !important;
+}
+
+// 2. **使用更高优先级的选择器来覆盖 Dialog 和 Drawer**
+//    我们通过在前面添加 `body` 或 `#app` 来轻松提升优先级，
+//    同时直接复用冲突源的选择器，确保精准覆盖。
+body {
+  // --- 直接对抗冲突源 ---
+  .el-overlay-dialog .el-dialog,
+  .el-overlay-dialog .el-drawer {
+    backdrop-filter: none !important;
+    background-color: transparent !important;
+  }
+
+  // --- 应用我们自己的样式 ---
+  .el-dialog,
+  .el-drawer {
+    // 我们自己的样式定义保持不变，但因为它们被包裹在 `body { ... }` 内部，
+    // 它们的最终选择器会变成 `body .el-dialog`，优先级自然就高了。
+
+    // -- 外层容器 --
+    @include m.elegant-border;
+    position: relative;
+    overflow: hidden;
+
+    &.el-dialog {
+      border-radius: var(--app-border-radius-lg, 12px) !important;
+      @include m.soft-shadow;
+    }
+
+    // -- 伪元素背景板 (核心方案) --
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      background-color: var(--app-dialog-bg-color) !important;
+    }
+
+    // -- 内部内容 --
+    .el-dialog__header,
+    .el-drawer__header,
+    .el-dialog__body,
+    .el-drawer__body,
+    .el-dialog__footer {
+      // 确保内容区本身透明，才能透出伪元素的背景
+      background-color: transparent !important;
+      position: relative;
+      z-index: 1;
+    }
+
+    .el-dialog__header,
+    .el-drawer__header {
+      color: var(--app-dialog-text-color) !important;
+      border-bottom: 1px solid var(--app-border-color);
+    }
+
+    .el-dialog__body,
+    .el-drawer__body {
+      color: var(--app-dialog-text-color) !important;
+    }
+
+    .el-dialog__headerbtn .el-icon,
+    .el-drawer__close-btn .el-icon {
+      color: var(--app-dialog-text-color) !important;
+    }
+  }
+}

@@ -2,24 +2,19 @@
     <div class="header-container">
         <div class="left-panel">
             <!-- 顶部菜单 -->
-            <el-menu :default-active="activeMenu" mode="horizontal" :router="true"
+            <el-menu :default-active="activeMenu" mode="horizontal" :ellipsis="false" :router="true"
                 text-color="var(--app-glass-text-color)" active-text-color="var(--el-color-primary)">
                 <el-menu-item v-for="route in menuRoutes" :key="route.path" :index="route.path">
                     <el-icon>
                         <component :is="route.meta.icon || 'Menu'" />
                     </el-icon>
-                    <span>{{ route.meta.title }}</span>
+                    <template #title>{{ route.meta.title }}</template>
                 </el-menu-item>
             </el-menu>
         </div>
         <!-- 右侧面板留作将来扩展 -->
         <div class="right-panel">
-            <el-icon class="icon-button" @click="router.push('/settings')">
-                <Setting />
-            </el-icon>
-            <el-icon class="icon-button" @click="router.push('/profile')">
-                <User />
-            </el-icon>
+
         </div>
     </div>
 </template>
@@ -30,6 +25,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
+
 
 const menuRoutes = computed(() => {
     // 直接从 router.options.routes 中过滤出需要主布局且未被隐藏的路由
@@ -43,13 +39,13 @@ const activeMenu = computed(() => route.path);
 .header-container {
     height: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 0 20px;
 }
 
 .left-panel {
-    flex-grow: 1;
+    height: 100%;
 }
 
 .el-menu--horizontal {
@@ -58,10 +54,12 @@ const activeMenu = computed(() => route.path);
 
     .el-menu-item {
         color: var(--app-glass-text-color);
+        border-bottom: none;
 
         &.is-active {
             color: var(--el-color-primary) !important;
             border-bottom-color: var(--el-color-primary) !important;
+            // border-bottom: none;
         }
 
         &:hover {
@@ -73,6 +71,7 @@ const activeMenu = computed(() => route.path);
 .right-panel {
     display: flex;
     align-items: center;
+    margin-right: 50px;
 
     .icon-button {
         margin-left: 10px;
@@ -80,6 +79,10 @@ const activeMenu = computed(() => route.path);
         font-size: 18px;
         color: var(--app-glass-text-color);
         transition: color 0.3s;
+
+        &.is-active {
+            color: var(--el-color-primary);
+        }
 
         &:hover {
             color: var(--el-color-primary);

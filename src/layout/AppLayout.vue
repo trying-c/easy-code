@@ -25,6 +25,9 @@
                 <AppMain />
             </div>
         </div>
+
+
+        <GlobalSettings v-bind="settings" />
     </div>
 </template>
 
@@ -33,69 +36,80 @@ import { useSettingsStore } from '@/store/modules/settings';
 import Sidebar from './components/Sidebar.vue';
 import Header from './components/Header.vue';
 import AppMain from './components/AppMain.vue';
+import GlobalSettings from '@/components/GlobalSettings.vue';
+import { computed } from 'vue';
 
 const settingsStore = useSettingsStore();
 
+const settings = computed(() => {
+
+    return settingsStore.layout === 'side' ? {
+        class: 'side-setting',
+        placement: 'bottom-left'
+    } : {
+        class: 'top-setting',
+        placement: 'top-right'
+    }
+});
 </script>
 
 <style lang="scss" scoped>
-$sidebar-width: 210px;
+$sidebar-width: 180px;
 $gap: 16px;
-$header-height: 60px;
+$header-height: 36px;
 $button-size: 32px;
 $transition-duration: 0.35s;
 $transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
 
+
+
 .app-wrapper {
-    position: relative;
     height: 100vh;
     width: 100vw;
-    // 基础样式，为两个布局模式提供一个带间距的画布
-    padding: $gap;
-    box-sizing: border-box;
     overflow: hidden;
 }
 
+
 /* ================== 侧边栏布局 (.layout-side) ================== */
 .layout-side {
+    display: flex;
+    gap: $gap;
+    /* 新增：将间距移到最外层 */
+    /* 新增：使用 gap 来创建侧边栏和主内容区的间距 */
 
     /* 侧边栏 */
     .sidebar-container {
-        // position: absolute;
-        top: $gap;
-        bottom: $gap;
-        left: $gap;
+        flex-shrink: 0;
+        /* 防止侧边栏被压缩 */
         width: $sidebar-width;
-        z-index: 10;
         transform: translateX(0);
-        transition: transform $transition-duration $transition-timing-function;
+        // 关键改动：移除 transform
+        transition: width $transition-duration $transition-timing-function,
+            min-width $transition-duration $transition-timing-function;
 
-        @include frosted-glass(var(--app-glass-bg-color), 20px);
-        @include elegant-border();
-        @include soft-shadow();
+        // @include frosted-glass(var(--app-glass-bg-color), 20px);
+        // @include elegant-border();
+        // @include soft-shadow();
         border-radius: 12px;
     }
 
     &.sidebar-collapsed .sidebar-container {
-        transform: translateX(calc(-100% - #{$gap}));
+        width: 48px;
+        // transform: translateX(calc(-100% - #{$gap}));
+        min-width: 0;
+        /* 关键新增：允许宽度收缩到0 */
+        overflow: hidden;
+        /* 新增：隐藏内部内容，避免在收缩时溢出 */
+
     }
 
     /* 主内容区 */
     .main-container {
-        position: absolute;
-        top: $gap;
-        bottom: $gap;
-        right: $gap;
-        z-index: 9;
-        transition: left $transition-duration $transition-timing-function;
-    }
-
-    &.sidebar-expanded .main-container {
-        left: calc(#{$sidebar-width} + #{$gap} * 2);
-    }
-
-    &.sidebar-collapsed .main-container {
-        left: $gap;
+        flex-grow: 1;
+        min-width: 0;
+        margin: $gap;
+        margin-left: calc(#{$gap} * -1 + 5px);
+        // transition: all $transition-duration $transition-timing-function;
     }
 
     .content-wrapper {
@@ -111,21 +125,36 @@ $transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
     .layout-collapse-button {
         position: absolute;
         top: 50%;
-        z-index: 12;
-        transform: translateY(-50%);
+        z-index: 1;
+        // transform: translateY(-50%);
         transition: left $transition-duration $transition-timing-function;
         border: 1px solid var(--app-border-color);
         background-color: var(--app-glass-bg-color);
     }
 
     &.sidebar-expanded .layout-collapse-button {
-        left: calc(#{$sidebar-width} + #{$gap} * 2 - (#{$button-size} / 2) - #{$gap});
+        left: calc(#{$sidebar-width} - #{$gap} * 2 - 6px);
     }
 
     &.sidebar-collapsed .layout-collapse-button {
-        left: calc(#{$gap} * -1);
+        // left: calc(#{$gap} - 16px);
+        left: 12px;
     }
+
+
+    .side-setting {
+
+        :deep(.settings-trigger) {
+            margin-bottom: 10px;
+        }
+
+        :deep(.settings-panel) { 
+            margin-bottom: 16px;
+        }
+    }
+
 }
+
 
 /* ================== 顶部布局 (.layout-top) ================== */
 .layout-top {
@@ -138,11 +167,13 @@ $transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
         height: 100%;
         display: flex;
         flex-direction: column;
-        gap: $gap;
+        // gap: $gap;
     }
 
-    .header-wrapper,
+    // .header-wrapper,
     .content-wrapper {
+        margin: $gap;
+        margin-top: calc(#{$gap} - 5px);
         @include frosted-glass();
         @include elegant-border();
         @include soft-shadow();
@@ -152,11 +183,16 @@ $transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
     .header-wrapper {
         flex-shrink: 0;
         height: $header-height;
+        margin-top: calc(#{$gap} / 2);
     }
 
     .content-wrapper {
         flex-grow: 1;
         min-height: 0;
+    }
+
+    .top-setting :deep(.settings-trigger) {
+        margin-right: 10px;
     }
 }
 </style>

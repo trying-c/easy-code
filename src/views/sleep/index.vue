@@ -6,7 +6,7 @@
 
         <el-row :gutter="16">
             <el-col :span="8">
-                <el-card class="data-card">
+                <el-card shadow="hover">
                     <template #header>记录昨晚睡眠</template>
                     <el-form label-position="top">
                         <el-form-item label="入睡时间">
@@ -22,7 +22,7 @@
                 </el-card>
             </el-col>
             <el-col :span="16">
-                <el-card class="data-card">
+                <el-card shadow="hover">
                     <template #header>睡眠质量分析</template>
                     <div class="placeholder-chart">
                         此处未来将渲染图表 (e.g., ECharts)
@@ -51,15 +51,6 @@ const wakeTime = ref(new Date(2024, 1, 2, 7, 30));
     }
 }
 
-.data-card {
-    background-color: transparent !important;
-    border: 1px solid var(--app-border-color);
-
-    :deep(.el-card__header),
-    :deep(.el-form-item__label) {
-        color: var(--app-glass-text-color);
-    }
-}
 
 .placeholder-chart {
     height: 257px;

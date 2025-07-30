@@ -1,9 +1,9 @@
 <template>
     <section class="app-main">
         <router-view v-slot="{ Component, route }">
-            <transition name="fade-transform" mode="out-in">
-                <component :is="Component" :key="route.path" />
-            </transition>
+            <!-- <transition name="fade" mode="out-in"> -->
+            <component :is="Component" :key="route.path" />
+            <!-- </transition> -->
         </router-view>
     </section>
 </template>
@@ -19,18 +19,21 @@
     box-sizing: border-box;
 }
 
-.fade-transform-leave-active,
-.fade-transform-enter-active {
-    transition: all 0.5s;
-}
+// /* 定义过渡动画 */
+// /* fade-enter-active: 新页面进入时的动画 */
+// /* fade-leave-active: 旧页面离开时的动画 */
 
-.fade-transform-enter-from {
-    opacity: 0;
-    transform: translateX(-30px);
-}
+// .fade-enter-active,
+// .fade-leave-active {
+//     transition: opacity 0.25s ease;
+// }
 
-.fade-transform-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
-}
+// /*
+//   进入前和离开后的状态
+//   我们让新页面开始时完全透明，旧页面结束时也完全透明
+// */
+// .fade-enter-from,
+// .fade-leave-to {
+//     opacity: 0;
+// }
 </style>

@@ -41,13 +41,39 @@ export const routes = [
     },
     {
         path: '/finance',
-        name: 'Finance',
         component: () => import('@/views/finance/index.vue'),
+        redirect: '/finance/dashboard',
         meta: {
             title: '财务管理',
             icon: 'Money',
             layout: 'AppLayout'
-        }
+        },
+        children: [
+            {
+                path: 'dashboard',
+                name: 'FinanceDashboard',
+                component: () => import('@/views/finance/dashboard.vue'),
+                meta: {
+                    title: '财务看板'
+                }
+            },
+            {
+                path: 'transactions',
+                name: 'FinanceTransactionList',
+                component: () => import('@/views/finance/transactions.vue'),
+                meta: {
+                    title: '账单列表'
+                }
+            },
+            {
+                path: 'settings',
+                name: 'FinanceSettings',
+                component: () => import('@/views/finance/settings.vue'),
+                meta: {
+                    title: '财务设置'
+                }
+            }
+        ]
     },
     {
         path: '/profile',

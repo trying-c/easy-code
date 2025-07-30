@@ -5,10 +5,10 @@ import App from './App.vue'
 import router from './router'
 import ElementPlus from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-// !! 关键：手动引入 Element Plus 的暗黑主题样式文件 !!
-import 'element-plus/theme-chalk/dark/css-vars.css'
 // 导入全局 SCSS 样式
 import '@/assets/styles/index.scss'
+// !! 关键：手动引入 Element Plus 的暗黑主题样式文件 !!
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 const app = createApp(App)
 

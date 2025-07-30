@@ -6,7 +6,7 @@
 
         <el-row :gutter="16">
             <el-col :span="8">
-                <el-card class="data-card">
+                <el-card shadow="hover">
                     <template #header>记录今日体重</template>
                     <el-form label-position="top">
                         <el-form-item label="体重 (kg)">
@@ -20,7 +20,7 @@
                 </el-card>
             </el-col>
             <el-col :span="16">
-                <el-card class="data-card">
+                <el-card shadow="hover">
                     <template #header>体重趋势图</template>
                     <div class="placeholder-chart">
                         此处未来将渲染图表 (e.g., ECharts)
@@ -48,15 +48,15 @@ const currentWeight = ref(65.0);
     }
 }
 
-.data-card {
-    background-color: transparent !important;
-    border: 1px solid var(--app-border-color);
+// .data-card {
+//     background-color: transparent !important;
+//     border: 1px solid var(--app-border-color);
 
-    :deep(.el-card__header),
-    :deep(.el-form-item__label) {
-        color: var(--app-glass-text-color);
-    }
-}
+//     :deep(.el-card__header),
+//     :deep(.el-form-item__label) {
+//         color: var(--app-glass-text-color);
+//     }
+// }
 
 .placeholder-chart {
     height: 200px;

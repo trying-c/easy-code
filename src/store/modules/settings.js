@@ -81,9 +81,9 @@ export const useSettingsStore = defineStore('settings', () => {
             }
             el.style.setProperty(`--el-color-primary-dark-2`, darkMix(newColor, 0.2));
 
-            // Part 3: 智能设置菜单的 hover 背景色
+            // // Part 3: 智能设置菜单的 hover 背景色
             // if (newTheme === 'dark') {
-            // 暗黑模式下，使用自定义的半透明颜色，确保对比度
+            //     // 暗黑模式下，使用自定义的半透明颜色，确保对比度
             el.style.setProperty('--el-menu-hover-bg-color', hexToRgba(newColor, 0.15));
             // } else {
             //     // 亮色模式下，使用 Element Plus 的默认行为 (light-9)
