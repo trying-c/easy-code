@@ -6,37 +6,18 @@
                 <h1 v-show="!settingsStore.isSidebarCollapsed">Trying's Room</h1>
             </div>
             <el-scrollbar>
-                <el-menu :class="{ 'is-sidebar-collapsed': settingsStore.isSidebarCollapsed }"
-                    :default-active="activeMenu" :router="true" :collapse="settingsStore.isSidebarCollapsed"
-                    :collapse-transition="false" :unique-opened="true" text-color="var(--app-glass-text-color)"
-                    active-text-color="var(--el-color-primary)">
-                    <el-menu-item v-for="route in menuRoutes" :key="route.path" :index="route.path">
-                        <el-icon>
-                            <component :is="route.meta.icon || 'Menu'" />
-                        </el-icon>
-                        <template #title>{{ route.meta.title }}</template>
-                    </el-menu-item>
-                </el-menu>
+                <Menus :collapse="settingsStore.isSidebarCollapsed" />
             </el-scrollbar>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import { useSettingsStore } from '@/store/modules/settings';
+import Menus from '@/components/Menus.vue';
 
 const settingsStore = useSettingsStore();
-const router = useRouter();
-const route = useRoute();
-const activeMenu = computed(() => route.path);
 
-
-const menuRoutes = computed(() => {
-    // 直接从 router.options.routes 中过滤出需要主布局且未被隐藏的路由
-    return router.options.routes.filter(r => r.meta?.layout === 'AppLayout' && !r.meta?.hidden);
-}); 
 </script>
 
 <style lang="scss" scoped>
@@ -72,17 +53,6 @@ const menuRoutes = computed(() => {
 
 .el-scrollbar {
     width: 100%;
-}
-
-.el-menu {
-    width: 100%;
-    border-right: none !important;
-    background-color: transparent !important;
-    flex: 1;
-
-    &.is-sidebar-collapsed :deep(.el-menu-tooltip__trigger) {
-        padding: 0 12px !important;
-    }
 }
 
 

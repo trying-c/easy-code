@@ -54,7 +54,8 @@ export const routes = [
                 name: 'FinanceDashboard',
                 component: () => import('@/views/finance/dashboard.vue'),
                 meta: {
-                    title: '财务看板'
+                    title: '财务看板',
+                    layout: 'AppLayout'
                 }
             },
             {
@@ -62,7 +63,8 @@ export const routes = [
                 name: 'FinanceTransactionList',
                 component: () => import('@/views/finance/transactions.vue'),
                 meta: {
-                    title: '账单列表'
+                    title: '账单列表',
+                    layout: 'AppLayout'
                 }
             },
             {
@@ -70,7 +72,8 @@ export const routes = [
                 name: 'FinanceSettings',
                 component: () => import('@/views/finance/settings.vue'),
                 meta: {
-                    title: '财务设置'
+                    title: '财务设置',
+                    layout: 'AppLayout'
                 }
             }
         ]
