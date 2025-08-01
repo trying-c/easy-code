@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { useSettingsStore } from '@/store/modules/settings';
+import { useSettingsStore } from '@/store/settings';
 import Sidebar from './components/Sidebar.vue';
 import Header from './components/Header.vue';
 import AppMain from './components/AppMain.vue';

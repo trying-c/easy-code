@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
+import { routes } from '@/router';
 
 const props = defineProps({
     collapse: {
@@ -17,9 +18,8 @@ const props = defineProps({
     }
 });
 
-const router = useRouter();
 const route = useRoute();
-const routes = computed(() => router.options.routes.filter(r => r.meta?.layout === 'AppLayout' && !r.meta?.hidden));
+const menus = computed(() => routes.filter(r => !r.meta?.hidden));
 
 const activeMenu = computed(() => {
     const { meta, path } = route;
@@ -30,8 +30,7 @@ const activeMenu = computed(() => {
     // 例如，在 /finance/transactions 页面，activeMenu 应该是 /finance
     const matchedParent = route.matched.find(r => r.path === path)?.parent;
     if (matchedParent) {
-        // 这里的逻辑可以更复杂，但简单的处理是直接返回父路径
-        // 但 Element Plus 的 `router` 模式通常能自动处理好这个，所以 path 即可
+        // 这里的逻辑可以更复杂，但简单的处理是直接返回父路径 
     }
     return path;
 });
@@ -77,22 +76,22 @@ const resolvePath = (basePath, routePath) => {
         :unique-opened="true" text-color="var(--app-glass-text-color)" active-text-color="var(--el-color-primary)">
 
         <!-- 循环遍历所有路由配置 -->
-        <template v-for="route in routes" :key="route.path">
+        <template v-for="item in menus" :key="item.path">
             <!-- 1. 只渲染那些没有被隐藏的路由 -->
-            <template v-if="!route.meta?.hidden">
+            <template v-if="!item.meta?.hidden">
 
                 <!-- 2. 情况一：如果路由有可见的子路由 (children)，渲染成 SubMenu -->
-                <el-sub-menu v-if="hasVisibleChildren(route)" :index="route.path">
+                <el-sub-menu v-if="hasVisibleChildren(item)" :index="item.path">
                     <template #title>
-                        <el-icon v-if="route.meta?.icon">
-                            <component :is="route.meta.icon" />
+                        <el-icon v-if="item.meta?.icon">
+                            <component :is="item.meta.icon" />
                         </el-icon>
-                        <span>{{ route.meta.title }}</span>
+                        <span>{{ item.meta.title }}</span>
                     </template>
 
                     <!-- 循环渲染子菜单项 -->
-                    <el-menu-item v-for="child in route.children" :key="child.path"
-                        :index="resolvePath(route.path, child.path)">
+                    <el-menu-item v-for="child in item.children" :key="child.path"
+                        :index="resolvePath(item.path, child.path)">
                         <!-- 子菜单项可以不显示图标，或者也给它配上图标 -->
                         <el-icon v-if="child.meta?.icon">
                             <component :is="child.meta.icon" />
@@ -102,12 +101,12 @@ const resolvePath = (basePath, routePath) => {
                 </el-sub-menu>
 
                 <!-- 3. 情况二：如果路由没有子路由，渲染成普通的 MenuItem -->
-                <el-menu-item v-else :index="route.path">
-                    <el-icon v-if="route.meta?.icon">
-                        <component :is="route.meta.icon" />
+                <el-menu-item v-else :index="item.path">
+                    <el-icon v-if="item.meta?.icon">
+                        <component :is="item.meta.icon" />
                     </el-icon>
                     <template #title>
-                        <span>{{ route.meta?.title }}</span>
+                        <span>{{ item.meta?.title }}</span>
                     </template>
                 </el-menu-item>
 

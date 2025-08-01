@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { useSettingsStore } from '@/store/modules/settings';
+import { useSettingsStore } from '@/store/settings';
 import Menus from '@/components/Menus.vue';
 
 const settingsStore = useSettingsStore();

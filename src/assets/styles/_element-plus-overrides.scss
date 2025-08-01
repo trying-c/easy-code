@@ -258,7 +258,7 @@
 // 1. **统一处理遮罩层** (这部分通常没问题，保持不变)
 .el-overlay {
   @include m.frosted-glass($bg-color: var(--app-overlay-bg-color), $blur: 16px);
-  border-radius: var(--app-border-radius-lg, 12px) !important;
+  // border-radius: var(--app-border-radius-lg, 12px) !important;
 }
 
 // 2. **使用更高优先级的选择器来覆盖 Dialog 和 Drawer**

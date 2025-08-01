@@ -7,9 +7,9 @@
 </template>
 
 <script setup>
-import { computed, defineAsyncComponent } from 'vue';
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useSettingsStore } from '@/store/modules/settings';
+import { useSettingsStore } from '@/store/settings';
 
 const AppLayout = defineAsyncComponent(() => import('./layout/AppLayout.vue'));
 const BlankLayout = defineAsyncComponent(() => import('./layout/BlankLayout.vue'));
@@ -23,8 +23,15 @@ const layouts = {
 const route = useRoute();
 const settingsStore = useSettingsStore();
 
-// 计算当前路由的布局名称
-const layoutName = computed(() => route.meta.layout || 'AppLayout');
+const layoutName = ref('AppLayout')
+
+watch(() => route.meta.layout,
+  (newLayout) => {
+    layoutName.value = newLayout || 'AppLayout';
+    settingsStore.setLayoutComponent(layoutName); // 更新设置
+  },
+  { immediate: true } // 初始时也执行一次
+);
 
 // 计算属性，用于动态选择布局组件
 const layoutComponent = computed(() => {

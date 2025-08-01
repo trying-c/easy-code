@@ -48,7 +48,7 @@ import { Setting, Moon, Sunny } from '@element-plus/icons-vue';
 // 1. 从 VueUse 引入 onClickOutside
 import { onClickOutside } from '@vueuse/core'
 // 1. 引入你的 settings store
-import { useSettingsStore } from '@/store/modules/settings'; // 请确保路径正确
+import { useSettingsStore } from '@/store/settings'; // 请确保路径正确
 
 // 1. 定义 props
 const props = defineProps({

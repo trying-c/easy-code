@@ -1,14 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 /**
- * 路由配置
- *
- * meta 参数说明:
- *   title: string        // 菜单和面包屑导航的标题
- *   icon: string         // 菜单项的图标
- *   layout: string       // 指定该路由使用的布局组件名 (AppLayout, BlankLayout, etc.)
+ * 静态路由 (Static Routes)
+ * - 无需权限，所有用户都能访问的页面，如登录页、404页等。
+ * - 它们在应用初始化时被直接挂载。
  */
-export const routes = [
+const staticRoutes = [
+    {// 根路径重定向
+        path: '/',
+        redirect: '/dashboard',
+        meta: {
+            hidden: true
+        }
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('@/errors/404.vue'),
+        meta: {
+            title: '404 - 页面未找到',
+            // 这个页面通常不需要布局，或者使用一个空白布局
+            layout: 'BlankLayout',
+            hidden: true // 确保它不会出现在菜单里
+        }
+    },
+]
+
+/**
+ * 动态路由，又叫菜单路由，暂时固定配置，后续应该由Pinia菜单配置数据改造而成。
+ */
+const menuRoutes = [
     {
         path: '/dashboard',
         name: 'Dashboard',
@@ -16,7 +37,6 @@ export const routes = [
         meta: {
             title: '看板',
             icon: 'House',
-            layout: 'AppLayout'
         }
     },
     {
@@ -26,7 +46,6 @@ export const routes = [
         meta: {
             title: '体重管理',
             icon: 'Histogram',
-            layout: 'AppLayout'
         }
     },
     {
@@ -36,47 +55,17 @@ export const routes = [
         meta: {
             title: '睡眠管理',
             icon: 'MoonNight',
-            layout: 'AppLayout'
         }
     },
     {
-        path: '/finance',
-        component: () => import('@/views/finance/index.vue'),
-        redirect: '/finance/dashboard',
+        path: '/notion',
+        name: 'Notion',
+        component: () => import('@/views/notion/index.vue'),
         meta: {
-            title: '财务管理',
-            icon: 'Money',
-            layout: 'AppLayout'
-        },
-        children: [
-            {
-                path: 'dashboard',
-                name: 'FinanceDashboard',
-                component: () => import('@/views/finance/dashboard.vue'),
-                meta: {
-                    title: '财务看板',
-                    layout: 'AppLayout'
-                }
-            },
-            {
-                path: 'transactions',
-                name: 'FinanceTransactionList',
-                component: () => import('@/views/finance/transactions.vue'),
-                meta: {
-                    title: '账单列表',
-                    layout: 'AppLayout'
-                }
-            },
-            {
-                path: 'settings',
-                name: 'FinanceSettings',
-                component: () => import('@/views/finance/settings.vue'),
-                meta: {
-                    title: '财务设置',
-                    layout: 'AppLayout'
-                }
-            }
-        ]
+            title: 'Notion',
+            icon: 'Notification',
+            hidden: true
+        }
     },
     {
         path: '/profile',
@@ -85,58 +74,58 @@ export const routes = [
         meta: {
             title: '个人中心',
             icon: 'User',
-            layout: 'AppLayout',
             hidden: true
         }
     },
     {
-        path: '/settings',
-        name: 'Settings',
-        component: () => import('@/views/settings/index.vue'),
+        path: "/system",
         meta: {
-            title: '系统设置',
-            icon: 'Setting',
-            layout: 'AppLayout',
-            hidden: true
-        }
-    },
-    // 根路径重定向
-    {
-        path: '/',
-        redirect: '/dashboard'
-    },
-    // =======================================================
-    // 关键：添加 404 通配符路由
-    // =======================================================
-    {
-        // 使用带参数的路径来匹配所有未被其他规则捕获的路径
-        // a. :pathMatch(.*)* 是一种高级匹配模式，能捕获多层级的路径
-        // b. :catchAll(.*) 是更常见的写法，两者效果类似
-        path: '/:pathMatch(.*)*',
-        name: 'NotFound',
-        component: () => import('@/views/error-page/404.vue'),
-        meta: {
-            title: '404 - 页面未找到',
-            // 这个页面通常不需要布局，或者使用一个空白布局
-            layout: 'BlankLayout',
-            hidden: true // 确保它不会出现在菜单里
-        }
-    },
-    // 示例：一个将来可能添加的登录页，它使用空白布局
-    // {
-    //     path: '/login',
-    //     name: 'Login',
-    //     component: () => import('@/views/login/index.vue'),
-    //     meta: {
-    //         title: '登录',
-    //         layout: 'BlankLayout'
-    //     }
-    // }
-];
+            title: "系统管理",
+            icon: "Setting",
+        },
+        children: [
+            {
+                path: "menu-config",
+                name: "MenuConfig",
+                component: () => import("@/views/system/menu-config/index.vue"),
+                meta: {
+                    title: "菜单配置"
+                }
+            }
+        ]
+    }
+]
 
+export const routes = [...staticRoutes, ...menuRoutes];
+
+/**
+ * 路由配置
+ *
+ * meta 参数说明:
+ *   title: string        // 菜单和面包屑导航的标题
+ *   icon: string         // 菜单项的图标
+ *   layout: string       // 指定该路由使用的布局组件名 (AppLayout, BlankLayout, etc.)
+ */
 const router = createRouter({
     history: createWebHistory(),
     routes: routes
 });
+
+/**
+ * 动态路由 (Dynamic Routes)
+ * - 将在这里被生成和添加。
+ * - 我们会在路由守卫 (router.beforeEach) 中调用一个函数，
+ *   该函数会读取 Pinia 中的菜单配置，生成路由，然后使用 router.addRoute() 添加。
+ * - 目前我们只做准备工作。
+ */
+
+// export function addDynamicRoutes() {
+//   // 伪代码
+//   const menuStore = useMenuStore();
+//   const dynamicRoutes = generateRoutesFromConfig(menuStore.config);
+//   dynamicRoutes.forEach(route => {
+//     router.addRoute(route);
+//   })
+// }
 
 export default router;

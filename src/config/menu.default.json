@@ -1,0 +1,26 @@
+[
+  {
+    "path": "/dashboard",
+    "page": "dashboard",
+    "layout": {
+      "component": "app",
+      "mode": "top"
+    },
+    "meta": { "title": "数据看板", "icon": "House", "enabled": true }
+  },
+  {
+    "path": "/system",
+    "layout": {
+      "component": "app",
+      "mode": "both"
+    },
+    "meta": { "title": "系统管理", "icon": "Setting", "enabled": true },
+    "children": [
+      {
+        "path": "menu-config",
+        "page": "menuConfig",
+        "meta": { "title": "菜单配置" }
+      }
+    ]
+  }
+]

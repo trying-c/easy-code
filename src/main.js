@@ -10,6 +10,8 @@ import '@/assets/styles/index.scss'
 // !! 关键：手动引入 Element Plus 的暗黑主题样式文件 !!
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
+import 'vue-notion/src/styles.css' // 核心样式
+
 const app = createApp(App)
 
 // 注册所有 Element Plus Icons
