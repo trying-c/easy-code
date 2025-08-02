@@ -3,9 +3,9 @@
         <el-card shadow="hover">
             <div class="item-content">
                 <!-- 拖拽手柄 (功能预留) -->
-                <!-- <el-icon class="drag-handle">
+                <el-icon :class="[isChildren ? 'drag-child-handle' : 'drag-handle']" title="拖拽排序">
                     <Rank />
-                </el-icon> -->
+                </el-icon>
 
                 <!-- 表单区域 -->
                 <el-form :model="item" label-width="80px" class="item-form">
@@ -21,7 +21,7 @@
                                 <el-input v-model="item.path" placeholder="路径" />
                             </el-form-item>
                         </el-col>
-                        <el-col v-if="isChildren || !item.children" :span="8">
+                        <el-col v-if="isChildren || !item.children || item.children.length == 0" :span="8">
                             <el-form-item label="页面">
                                 <el-select v-model="item.page" placeholder="选择页面" clearable filterable
                                     style="width: 100%;">
@@ -62,24 +62,36 @@
                 <!-- 操作区域 -->
                 <div class="item-actions">
                     <el-switch v-model="item.meta.enabled" active-text="启用" inactive-text="禁用" inline-prompt />
-                    <el-button v-if="!isChildren" @click="emits('addChild', item)" circle :icon="Plus" title="添加子菜单" />
-                    <el-button @click="emits('remove')" type="danger" circle :icon="Delete" title="删除此菜单" />
+                    <div>
+                        <el-button v-if="!isChildren" circle :icon="Plus" title="添加子菜单"
+                            @click="() => emits('addChild', item)" />
+                        <el-button :disabled="item.path == '/system' || item.path == '/menu-config'" type="danger"
+                            circle :icon="Delete" title="删除此菜单" @click="() => emits('remove')" />
+                    </div>
                 </div>
             </div>
 
             <!-- 递归渲染子菜单 -->
             <div v-if="item.children && item.children.length > 0" class="children-container">
-                <!-- 递归调用自身 -->
-                <MenuItemEditor v-for="(child, index) in item.children" :key="child.id" :item="child" is-children
-                    :level="level + 1" @add-child="emits('addChild', $event)" @remove="() => removeChild(index)" />
+                <draggable v-model="item.children" item-key="id" v-bind="dragOptions" tag="div">
+                    <template #item="{ element: child, index }">
+                        <div :key="child.id">
+                            <MenuItemEditor :item="child" is-children :level="level + 1"
+                                @add-child="handleAddChild(child)" @remove="handleRemoveChild(index)" />
+                        </div>
+                    </template>
+                </draggable>
             </div>
         </el-card>
+
     </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import { pageOptions, layoutComponentOptions, layoutModeOptions } from './options';
+import { computed } from 'vue';
+// 2. 导入 draggable 和图标
+import draggable from 'vuedraggable';
+import { pageOptions, layoutComponentOptions, layoutModeOptions } from '../options';
 import { Plus, Delete } from '@element-plus/icons-vue';
 
 // 声明组件的 props 和 emits
@@ -115,16 +127,48 @@ const props = defineProps({
 
 const emits = defineEmits(['addChild', 'remove']);
 
-// 组件内部的方法，用于处理子项的删除
-const removeChild = (index) => {
-    props.item.children.splice(index, 1);
-    if (props.item.children.length == 0) {
-        delete props.item.children;
+// 4. 添加 vuedraggable 的配置
+const dragOptions = computed(() => {
+    return {
+        animation: 200,
+        group: 'menu-item', // 关键：所有可拖拽区域共享一个组名，以实现跨级拖拽
+        disabled: false,
+        handle: '.drag-child-handle', // 指定拖拽手柄的 CSS 选择器
+        ghostClass: 'ghost', // 拖拽时占位符的类名 
+        moveClass: 'draggable-move-transition'
+    };
+});
+
+// 创建新菜单项的模板
+const createNewMenuItem = () => ({
+    id: `temp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`, // 保证唯一性
+    path: "",
+    page: "",
+    layout: {
+        component: "app",
+        mode: "side"
+    },
+    meta: {
+        title: "",
+        icon: "",
+        enabled: true
+    },
+    children: []
+});
+
+const handleAddChild = (parentItem) => {
+    if (!parentItem.children) {
+        parentItem.children = [];
     }
+    parentItem.children.push(createNewMenuItem());
+};
+
+const handleRemoveChild = (index) => {
+    props.item.children.splice(index, 1);
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .menu-item-editor {
     margin-top: 15px;
     transition: all 0.3s ease;
@@ -136,6 +180,7 @@ const removeChild = (index) => {
     gap: 15px;
 }
 
+.drag-child-handle,
 .drag-handle {
     cursor: grab;
     font-size: 20px;
@@ -149,10 +194,16 @@ const removeChild = (index) => {
 
 .item-actions {
     display: flex;
-    align-items: center;
+    flex-direction: column-reverse;
+    // justify-content: flex-start;
+    align-items: flex-start;
     gap: 10px;
     padding-top: 5px;
     white-space: nowrap;
+
+    // .el-button {
+    //     margin: 0;
+    // }
 }
 
 .children-container {

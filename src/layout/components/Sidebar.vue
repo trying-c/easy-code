@@ -6,14 +6,14 @@
                 <h1 v-show="!settingsStore.isSidebarCollapsed">Trying's Room</h1>
             </div>
             <el-scrollbar>
-                <Menus :collapse="settingsStore.isSidebarCollapsed" />
+                <menus :collapse="settingsStore.isSidebarCollapsed" mode="side" />
             </el-scrollbar>
         </div>
     </div>
 </template>
 
 <script setup>
-import { useSettingsStore } from '@/store/settings';
+import { useSettingsStore } from '@/stores/settings';
 import Menus from '@/components/Menus.vue';
 
 const settingsStore = useSettingsStore();

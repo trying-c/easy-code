@@ -29,7 +29,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useSettingsStore } from '@/store/settings';
+import { useSettingsStore } from '@/stores/settings';
 
 const settingsStore = useSettingsStore();
 

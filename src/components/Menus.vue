@@ -1,25 +1,80 @@
+<template>
+
+    <el-menu :class="{ 'is-sidebar-collapsed': props.collapse }" :mode="menuMode" :ellipsis="props.ellipsis"
+        :default-active="activeMenu" router :collapse="props.collapse" :collapse-transition="false"
+        :unique-opened="true" text-color="var(--app-glass-text-color)" active-text-color="var(--el-color-primary)">
+
+        <!-- 循环遍历所有路由配置 -->
+        <template v-for="item in menus" :key="item.path">
+            <!-- 1. 只渲染那些没有被隐藏的路由 -->
+            <template v-if="!item.meta?.hidden">
+
+                <!-- 2. 情况一：如果路由有可见的子路由 (children)，渲染成 SubMenu -->
+                <el-sub-menu v-if="hasVisibleChildren(item)" :index="item.path" :disabled="!item.meta?.enabled">
+                    <template #title>
+                        <el-icon v-if="item.meta?.icon">
+                            <component :is="item.meta.icon" />
+                        </el-icon>
+                        <span>{{ item.meta.title }}</span>
+                    </template>
+
+                    <!-- 循环渲染子菜单项 -->
+                    <el-menu-item v-for="child in item.children" :key="child.path"
+                        :index="resolvePath(item.path, child.path)" :disabled="!child.meta?.enabled">
+                        <!-- 子菜单项可以不显示图标，或者也给它配上图标 -->
+                        <el-icon v-if="child.meta?.icon">
+                            <component :is="child.meta.icon" />
+                        </el-icon>
+                        <span>{{ child.meta.title }}</span>
+                    </el-menu-item>
+                </el-sub-menu>
+
+                <!-- 3. 情况二：如果路由没有子路由，渲染成普通的 MenuItem -->
+                <el-menu-item v-else :index="item.path" :disabled="!item.meta?.enabled">
+                    <el-icon v-if="item.meta?.icon">
+                        <component :is="item.meta.icon" />
+                    </el-icon>
+                    <template #title>
+                        <span>{{ item.meta?.title }}</span>
+                    </template>
+                </el-menu-item>
+
+            </template>
+        </template>
+    </el-menu>
+</template>
+
 <script setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { routes } from '@/router';
+import { useMenuStore } from '@/stores/menu';
 
 const props = defineProps({
     collapse: {
         type: Boolean,
         default: false
     },
+    layout: {
+        type: String,
+        default: 'app' // 默认布局组件
+    },
     mode: {
         type: String,
-        default: 'vertical' // 默认是 vertical 模式
+        default: 'side' // 默认布局模式
     },
     ellipsis: {
         type: Boolean,
         default: true
-    }
+    },
 });
 
 const route = useRoute();
-const menus = computed(() => routes.filter(r => !r.meta?.hidden));
+const menuStore = useMenuStore(); // 3. 实例化 store
+const menus = computed(() => menuStore.config.filter(r => !r.meta?.hidden && r.layout?.component === props.layout && (r.layout?.mode === props.mode || r.layout?.mode === 'both')));
+
+const menuMode = computed(() => {
+    return props.mode === 'top' ? 'horizontal' : 'vertical';
+});
 
 const activeMenu = computed(() => {
     const { meta, path } = route;
@@ -68,52 +123,6 @@ const resolvePath = (basePath, routePath) => {
     return newPath.replace(/\/\//g, '/');
 };
 </script>
-
-<template>
-
-    <el-menu :class="{ 'is-sidebar-collapsed': props.collapse }" :mode="props.mode" :ellipsis="props.ellipsis"
-        :default-active="activeMenu" router :collapse="props.collapse" :collapse-transition="false"
-        :unique-opened="true" text-color="var(--app-glass-text-color)" active-text-color="var(--el-color-primary)">
-
-        <!-- 循环遍历所有路由配置 -->
-        <template v-for="item in menus" :key="item.path">
-            <!-- 1. 只渲染那些没有被隐藏的路由 -->
-            <template v-if="!item.meta?.hidden">
-
-                <!-- 2. 情况一：如果路由有可见的子路由 (children)，渲染成 SubMenu -->
-                <el-sub-menu v-if="hasVisibleChildren(item)" :index="item.path">
-                    <template #title>
-                        <el-icon v-if="item.meta?.icon">
-                            <component :is="item.meta.icon" />
-                        </el-icon>
-                        <span>{{ item.meta.title }}</span>
-                    </template>
-
-                    <!-- 循环渲染子菜单项 -->
-                    <el-menu-item v-for="child in item.children" :key="child.path"
-                        :index="resolvePath(item.path, child.path)">
-                        <!-- 子菜单项可以不显示图标，或者也给它配上图标 -->
-                        <el-icon v-if="child.meta?.icon">
-                            <component :is="child.meta.icon" />
-                        </el-icon>
-                        <span>{{ child.meta.title }}</span>
-                    </el-menu-item>
-                </el-sub-menu>
-
-                <!-- 3. 情况二：如果路由没有子路由，渲染成普通的 MenuItem -->
-                <el-menu-item v-else :index="item.path">
-                    <el-icon v-if="item.meta?.icon">
-                        <component :is="item.meta.icon" />
-                    </el-icon>
-                    <template #title>
-                        <span>{{ item.meta?.title }}</span>
-                    </template>
-                </el-menu-item>
-
-            </template>
-        </template>
-    </el-menu>
-</template>
 
 <style lang="scss" scoped>
 .el-menu {

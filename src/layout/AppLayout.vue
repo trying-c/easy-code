@@ -6,7 +6,7 @@
         'sidebar-collapsed': settingsStore.isSidebarCollapsed,
     }">
         <!-- 侧边栏 (只在侧边栏布局时渲染) -->
-        <Sidebar v-if="settingsStore.layout === 'side'" />
+        <app-sidebar v-if="settingsStore.layout === 'side'" />
 
         <!-- 折叠按钮 (只在侧边栏布局时渲染) -->
         <el-button v-if="settingsStore.layout === 'side'" class="layout-collapse-button"
@@ -17,24 +17,24 @@
         <div class="main-container">
             <!-- 顶栏 (只在顶部布局时渲染) -->
             <div v-if="settingsStore.layout === 'top'" class="header-wrapper">
-                <Header />
+                <app-header />
             </div>
 
             <!-- 主内容区 -->
             <div class="content-wrapper">
-                <AppMain />
+                <app-main />
             </div>
         </div>
 
 
-        <GlobalSettings v-bind="settings" />
+        <global-settings v-bind="settings" />
     </div>
 </template>
 
 <script setup>
-import { useSettingsStore } from '@/store/settings';
-import Sidebar from './components/Sidebar.vue';
-import Header from './components/Header.vue';
+import { useSettingsStore } from '@/stores/settings';
+import AppSidebar from './components/Sidebar.vue';
+import AppHeader from './components/Header.vue';
 import AppMain from './components/AppMain.vue';
 import GlobalSettings from '@/components/GlobalSettings.vue';
 import { computed } from 'vue';
@@ -148,7 +148,7 @@ $transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
             margin-bottom: 10px;
         }
 
-        :deep(.settings-panel) { 
+        :deep(.settings-panel) {
             margin-bottom: 16px;
         }
     }

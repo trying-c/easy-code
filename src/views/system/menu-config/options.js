@@ -1,10 +1,8 @@
 export const pageOptions = [
-    'dashboard',
-    'userManagement',
-    'roleManagement',
-    'menuConfig',
-    'bankTransfer',
-    'comingSoon'
+    'dashboard/index',
+    'weight/index',
+    'sleep/index',
+    'system/menu-config/index',
 ];
 
 export const layoutComponentOptions = [{

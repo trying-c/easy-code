@@ -9,7 +9,7 @@
 <script setup>
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useSettingsStore } from '@/store/settings';
+import { useSettingsStore } from '@/stores/settings';
 
 const AppLayout = defineAsyncComponent(() => import('./layout/AppLayout.vue'));
 const BlankLayout = defineAsyncComponent(() => import('./layout/BlankLayout.vue'));

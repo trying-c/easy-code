@@ -7,22 +7,28 @@
                 <h2>菜单路由配置</h2>
                 <div>
                     <el-button @click="addRootMenu" :icon="Plus">添加一级菜单</el-button>
-                    <el-button type="primary" @click="handleSave" :loading="isSaving">保存配置</el-button>
+                    <el-button type="primary" @click="handleSave" :loading="isSaving"
+                        :disabled="!isDirty">保存配置</el-button>
                     <el-button @click="handleReset">恢复默认</el-button>
                 </div>
             </div>
 
-            <!-- <el-alert title="操作提示" type="info" description="拖拽手柄可调整同级顺序(功能待实现)，点击 +/- 按钮管理层级。所有修改将在点击“保存配置”并刷新页面后生效。"
-                show-icon :closable="false" style="margin-bottom: 20px;" /> -->
-
             <!-- 递归组件的根节点 -->
             <div class="menu-tree-wrapper">
-                <MenuItemEditor v-for="(item, index) in menuTree" :key="item.id" :item="item" @add-child="addChild"
-                    @remove="() => removeRootMenu(index)" />
+                <draggable v-model="menuTree" item-key="id" :options="draggableOptions" tag="div">
+                    <template #item="{ element: item, index }">
+                        <div :key="item.id">
+                            <MenuItemEditor :item="item" @add-child="handleAddChild(item)"
+                                @remove="removeRootMenu(index)" :is-children="false" />
+                        </div>
+                    </template>
+                </draggable>
                 <el-empty v-if="!menuTree.length" description="暂无菜单配置，请添加一级菜单"></el-empty>
             </div>
         </div>
 
+
+        <el-divider direction="vertical" style="height: 100%;" />
 
         <div class="menu-config-overview">
             <!-- 头部标题和操作按钮 -->
@@ -35,21 +41,31 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { useMenuStore } from '@/store/menu';
+import { ref, watch, computed } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
+import { useMenuStore } from '@/stores/menu';
 import { Plus } from '@element-plus/icons-vue';
-import MenuItemEditor from '@/components/menu-config/MenuItemEditor.vue';
+import MenuItemEditor from './components/MenuItemEditor.vue';
+import draggable from "vuedraggable";
 
-// 1. 初始化 Store
-const menuStore = useMenuStore();
+// #region----- data ------- 
+const menuStore = useMenuStore();// 1. 初始化 Store
 
 // 2. 本地响应式状态
 // **关键**：我们不直接修改store，而是创建一个深拷贝进行编辑，只有保存时才提交。
 const menuTree = ref([]);
 const isSaving = ref(false);
 
-// 深拷贝函数
-const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
+// 新增: 用于存储原始数据，作为对比基准
+const originalMenuTree = ref([]);
+
+//  #endregion----------------
+
+/**
+ * 深拷贝函数
+ * @param {Object} item 子项
+ */
+const deepClone = item => JSON.parse(JSON.stringify(item));
 
 // 创建新菜单项的模板
 const createNewMenuItem = () => ({
@@ -88,39 +104,60 @@ watch(
         const clonedConfig = deepClone(newConfig || []);
         addStableIds(clonedConfig); // 为所有节点确保有 id
         menuTree.value = clonedConfig;
+        // 更新原始备份
+        originalMenuTree.value = deepClone(clonedConfig);
     },
     {
         immediate: true,
         deep: true
     }
 );
+// 新增: 创建计算属性来判断数据是否被修改 ("脏"状态)
+const isDirty = computed(() => {
+    return JSON.stringify(menuTree.value) !== JSON.stringify(originalMenuTree.value);
+});
+
+const draggableOptions = computed(() => {
+    return {
+        animation: 200,
+        group: 'menu-tree', // 关键：所有可拖拽区域共享一个组名，以实现跨级拖拽
+        disabled: false,
+        handle: '.drag-handle', // 指定拖拽手柄的 CSS 选择器
+        ghostClass: 'ghost', // 拖拽时占位符的类名 
+        moveClass: 'draggable-move-transition'
+    };
+});
 
 // 4. 操作方法
 const addRootMenu = () => {
     menuTree.value.push(createNewMenuItem());
 };
-
 const removeRootMenu = (index) => {
     menuTree.value.splice(index, 1);
 };
-
-const addChild = (parentItem) => {
+const handleAddChild = (parentItem) => {
     if (!parentItem.children) {
         parentItem.children = [];
     }
     parentItem.children.push(createNewMenuItem());
-};
+}
+
 
 const handleSave = () => {
-    // 注意：在保存前，可以选择性地移除我们添加的临时 id
-    const configToSave = deepClone(menuTree.value);
     isSaving.value = true;
-    // 直接将本地编辑好的树提交给 store
-    menuStore.updateMenuConfig(configToSave);
-    setTimeout(() => {
+    // 从 menuTree 创建一个干净的克隆用于保存
+    const configToSave = deepClone(menuTree.value);
+
+    menuStore.updateMenuConfig(configToSave).then(() => {
+        // 保存成功后, 更新原始备份，这样 isDirty 会变为 false
+        originalMenuTree.value = deepClone(menuTree.value);
+        ElMessage.success('配置已保存！');
+    }).catch(error => {
+        ElMessage.error('保存失败，请重试。');
+        console.error("Save failed:", error);
+    }).finally(() => {
         isSaving.value = false;
-        ElMessage.success('菜单配置已保存！');
-    }, 300); // 模拟保存延迟
+    });
 };
 
 const handleReset = () => {
@@ -134,6 +171,30 @@ const handleReset = () => {
         ElMessage.success('已恢复为默认配置！');
     }).catch(() => { });
 };
+
+onBeforeRouteLeave(async () => {
+    // 如果数据没有被修改，则直接允许离开
+    if (!isDirty.value) {
+        return true;
+    }
+
+    // 如果数据被修改了，弹窗确认
+    try {
+        await ElMessageBox.confirm(
+            '您有未保存的更改，确定要离开吗？所有未保存的数据都将丢失。',
+            '未保存的更改',
+            {
+                confirmButtonText: '确定离开',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        );
+        // 用户点击了 "确定离开"
+        return true;
+    } catch (error) {
+        return false; // 阻止导航
+    }
+});
 </script>
 
 <style lang="scss" scoped>

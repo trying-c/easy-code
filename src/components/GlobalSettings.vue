@@ -25,8 +25,8 @@
                     <span class="label">布局模式</span>
                     <el-radio-group :model-value="settingsStore.layout" size="small"
                         @update:model-value="settingsStore.setLayout($event)">
-                        <el-radio-button label="side">侧边</el-radio-button>
-                        <el-radio-button label="top">顶部</el-radio-button>
+                        <el-radio-button value="side">侧边</el-radio-button>
+                        <el-radio-button value="top">顶部</el-radio-button>
                     </el-radio-group>
                 </div>
 
@@ -48,7 +48,7 @@ import { Setting, Moon, Sunny } from '@element-plus/icons-vue';
 // 1. 从 VueUse 引入 onClickOutside
 import { onClickOutside } from '@vueuse/core'
 // 1. 引入你的 settings store
-import { useSettingsStore } from '@/store/settings'; // 请确保路径正确
+import { useSettingsStore } from '@/stores/settings'; // 请确保路径正确
 
 // 1. 定义 props
 const props = defineProps({

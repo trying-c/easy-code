@@ -10,14 +10,14 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
-    "@notionhq/client": "^4.0.1",
     "@vueuse/core": "^13.6.0",
     "axios": "^1.11.0",
     "element-plus": "^2.10.4",
     "pinia": "^3.0.3",
+    "uuid": "^11.1.0",
     "vue": "^3.5.17",
-    "vue-notion": "^3.0.0",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",

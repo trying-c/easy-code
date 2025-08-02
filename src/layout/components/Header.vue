@@ -1,7 +1,7 @@
 <template>
     <div class="header-container">
         <div class="left-panel">
-            <Menus :collapse="false" mode="horizontal" :ellipsis="false" />
+            <menus :collapse="false" mode="top" :ellipsis="false" />
         </div>
         <!-- 右侧面板留作将来扩展 -->
         <div class="right-panel">

@@ -1,25 +1,54 @@
 [
   {
-    "path": "/dashboard",
-    "page": "dashboard",
+    "path": "/sleep",
+    "page": "sleep/index",
     "layout": {
       "component": "app",
       "mode": "top"
     },
-    "meta": { "title": "数据看板", "icon": "House", "enabled": true }
+    "meta": { "title": "睡眠", "icon": "MoonNight", "enabled": true }
+  },
+  {
+    "path": "/weight",
+    "page": "weight/index",
+    "layout": {
+      "component": "app",
+      "mode": "top"
+    },
+    "meta": { "title": "体重", "icon": "LineChart", "enabled": true }
+  },
+  {
+    "path": "/dashboard",
+    "page": "dashboard/index",
+    "layout": {
+      "component": "app",
+      "mode": "top"
+    },
+    "meta": { "title": "仪表盘", "icon": "House", "enabled": true }
   },
   {
     "path": "/system",
     "layout": {
       "component": "app",
-      "mode": "both"
+      "mode": "top"
     },
-    "meta": { "title": "系统管理", "icon": "Setting", "enabled": true },
+    "meta": {
+      "title": "系统管理",
+      "icon": "Setting",
+      "enabled": true
+    },
     "children": [
       {
-        "path": "menu-config",
-        "page": "menuConfig",
-        "meta": { "title": "菜单配置" }
+        "path": "/menu-config",
+        "page": "system/menu-config/index",
+        "layout": {
+          "component": "app",
+          "mode": "top"
+        },
+        "meta": {
+          "title": "菜单配置",
+          "enabled": true
+        }
       }
     ]
   }
