@@ -42,6 +42,11 @@ function transformMenuToRoute(menuItem, isChild = false) {
         meta: { ...menuItem.meta }, // 复制 meta 数据
     };
 
+    // 如果是顶层路由，添加一个标记
+    if (!isChild) {
+        route.meta.isDynamic = true;
+    }
+
     // 如果有 'page' 字段，则它是一个视图组件路由
     if (menuItem.page) {
         // 构造模块路径并从预先加载的映射中获取组件

@@ -43,6 +43,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
+import { reloadDynamicRoutes } from '@/router'; // 导入我们的新函数
 import { useMenuStore } from '@/stores/menu';
 import { Plus } from '@element-plus/icons-vue';
 import MenuItemEditor from './components/MenuItemEditor.vue';
@@ -148,10 +149,13 @@ const handleSave = () => {
     // 从 menuTree 创建一个干净的克隆用于保存
     const configToSave = deepClone(menuTree.value);
 
-    menuStore.updateMenuConfig(configToSave).then(() => {
+    menuStore.updateMenuConfig(configToSave).then(async () => {
         // 保存成功后, 更新原始备份，这样 isDirty 会变为 false
         originalMenuTree.value = deepClone(menuTree.value);
-        ElMessage.success('配置已保存！');
+        // 2. 调用函数重载路由
+        await reloadDynamicRoutes().then(() => {
+            ElMessage.success('菜单配置已更新，新路由已生效！');
+        })
     }).catch(error => {
         ElMessage.error('保存失败，请重试。');
         console.error("Save failed:", error);
