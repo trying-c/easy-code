@@ -28,8 +28,7 @@
                         <span>{{ child.meta.title }}</span>
                     </el-menu-item>
                 </el-sub-menu>
-
-                <!-- 3. 情况二：如果路由没有子路由，渲染成普通的 MenuItem -->
+ 
                 <el-menu-item v-else :index="item.path" :disabled="!item.meta?.enabled">
                     <el-icon v-if="item.meta?.icon">
                         <component :is="item.meta.icon" />
@@ -68,9 +67,43 @@ const props = defineProps({
     },
 });
 
+/**
+ * 递归过滤函数，用于深度过滤菜单项。
+ * 只保留那些满足条件的菜单项。
+ * @param list 
+ * @param callback 
+ */
+function deepFilter(list, callback) {
+    return list.reduce((acc, item) => {
+        // 如果当前项满足条件，直接添加到结果中
+        if (callback(item)) {
+            const newItem = { ...item };
+            // 如果有子项，递归过滤子项
+            if (newItem.children) {
+                newItem.children = deepFilter(newItem.children, callback);
+                // 如果子项过滤后为空，则删除 children 属性
+                if (newItem.children.length === 0) {
+                    delete newItem.children;
+                }
+            }
+            acc.push(newItem);
+        }
+        return acc;
+    }, []);
+}
+
+
+
 const route = useRoute();
 const menuStore = useMenuStore(); // 3. 实例化 store
-const menus = computed(() => menuStore.config.filter(r => !r.meta?.hidden && r.layout?.component === props.layout && (r.layout?.mode === props.mode || r.layout?.mode === 'both')));
+// const menus = computed(() => menuStore.config.filter(r => !r.meta?.hidden && r.layout?.component === props.layout && (r.layout?.mode === props.mode || r.layout?.mode === 'both')));
+
+const menus = computed(() => {
+    return deepFilter(menuStore.config, item => {
+        // 只保留那些没有被隐藏的，并且符合当前布局和模式的菜单项
+        return !item.meta?.hidden && item.layout?.component === props.layout && (item.layout?.mode === props.mode || item.layout?.mode === 'both');
+    });
+});
 
 const menuMode = computed(() => {
     return props.mode === 'top' ? 'horizontal' : 'vertical';

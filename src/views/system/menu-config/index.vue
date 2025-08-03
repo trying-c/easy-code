@@ -1,7 +1,7 @@
 <!-- src/views/system/menu-config/index.vue -->
 <template>
-    <div class="menu-config-container">
-        <div class="menu-config-main">
+    <div class="menu-config-container" :class="[settingsStore.layout]">
+        <div class="menu-config-main" :class="[settingsStore.layout]">
             <!-- 头部标题和操作按钮 -->
             <div class="menu-config-header">
                 <h2>菜单路由配置</h2>
@@ -28,9 +28,9 @@
         </div>
 
 
-        <el-divider direction="vertical" style="height: 100%;" />
+        <el-divider v-if="settingsStore.layout == 'side'" direction="vertical" style="height: 100%;" />
 
-        <div class="menu-config-overview">
+        <div class="menu-config-overview" :class="[settingsStore.layout]">
             <!-- 头部标题和操作按钮 -->
             <!-- <div class="menu-config-header"> -->
             <h2>预览</h2>
@@ -45,12 +45,14 @@ import { ref, watch, computed } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { reloadDynamicRoutes } from '@/router'; // 导入我们的新函数
 import { useMenuStore } from '@/stores/menu';
+import { useSettingsStore } from '@/stores/settings';
 import { Plus } from '@element-plus/icons-vue';
 import MenuItemEditor from './components/MenuItemEditor.vue';
 import draggable from "vuedraggable";
 
 // #region----- data ------- 
-const menuStore = useMenuStore();// 1. 初始化 Store
+const menuStore = useMenuStore();//  初始化 Store
+const settingsStore = useSettingsStore(); //  初始化设置 Store
 
 // 2. 本地响应式状态
 // **关键**：我们不直接修改store，而是创建一个深拷贝进行编辑，只有保存时才提交。
@@ -83,7 +85,7 @@ const createNewMenuItem = () => ({
         enabled: true
     }
 });
-// **关键修正3: 递归函数，为从 store 加载的树形数据添加稳定 id**
+//  关键修正3: 递归函数，为从 store 加载的树形数据添加稳定 id 
 const addStableIds = (nodes) => {
     if (!Array.isArray(nodes)) return;
     nodes.forEach(node => {
@@ -128,6 +130,8 @@ const draggableOptions = computed(() => {
         moveClass: 'draggable-move-transition'
     };
 });
+
+
 
 // 4. 操作方法
 const addRootMenu = () => {
@@ -204,22 +208,34 @@ onBeforeRouteLeave(async () => {
 <style lang="scss" scoped>
 .menu-config {
     &-container {
-        // padding: $padding-base 0;
         display: flex;
         width: 100%;
         height: 100%;
         overflow: hidden;
 
-        // flex-direction: row-reverse;
+        &.top {
+            flex-direction: column-reverse;
+        }
+
+        &.side {
+            flex-direction: row;
+        }
     }
 
     &-overview {
         flex: 2;
-        // border-right: 1px solid var(--el-border-color);
 
         h2 {
             width: 100%;
             text-align: right;
+        }
+
+        &.top {
+            flex: 1;
+
+            h2 {
+                text-align: left;
+            }
         }
     }
 

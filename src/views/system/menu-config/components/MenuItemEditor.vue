@@ -16,6 +16,29 @@
                                 <el-input v-model="item.meta.title" placeholder="菜单显示名称" />
                             </el-form-item>
                         </el-col>
+                        <!-- 布局配置 -->
+                        <el-col v-if="!isChildren" :span="8">
+                            <el-form-item label="布局组件">
+                                <el-select v-model="item.layout.component" placeholder="选择布局" style="width: 100%;">
+                                    <el-option v-for="opt in layoutComponentOptions" :key="opt.value" :label="opt.label"
+                                        :value="opt.value" />
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="布局模式">
+                                <el-select v-model="item.layout.mode" placeholder="选择模式" style="width: 100%;">
+                                    <el-option v-for="opt in layoutModeOptions" :key="opt.value" :label="opt.label"
+                                        :value="opt.value" />
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <!-- Meta配置 -->
+                        <el-col :span="8">
+                            <el-form-item label="图标">
+                                <el-input v-model="item.meta.icon" placeholder="Element Plus 图标名" />
+                            </el-form-item>
+                        </el-col>
                         <el-col :span="8">
                             <el-form-item label="路径">
                                 <el-input v-model="item.path" placeholder="路径" />
@@ -30,32 +53,7 @@
                             </el-form-item>
                         </el-col>
 
-                        <template v-if="!isChildren">
-                            <!-- 布局配置 -->
-                            <el-col :span="8">
-                                <el-form-item label="布局组件">
-                                    <el-select v-model="item.layout.component" placeholder="选择布局" style="width: 100%;">
-                                        <el-option v-for="opt in layoutComponentOptions" :key="opt.value"
-                                            :label="opt.label" :value="opt.value" />
-                                    </el-select>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="布局模式">
-                                    <el-select v-model="item.layout.mode" placeholder="选择模式" style="width: 100%;">
-                                        <el-option v-for="opt in layoutModeOptions" :key="opt.value" :label="opt.label"
-                                            :value="opt.value" />
-                                    </el-select>
-                                </el-form-item>
-                            </el-col>
-                        </template>
 
-                        <!-- Meta配置 -->
-                        <el-col :span="8">
-                            <el-form-item label="图标">
-                                <el-input v-model="item.meta.icon" placeholder="Element Plus 图标名" />
-                            </el-form-item>
-                        </el-col>
                     </el-row>
                 </el-form>
 
