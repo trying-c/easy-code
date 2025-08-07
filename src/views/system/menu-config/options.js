@@ -3,6 +3,7 @@ export const pageOptions = [
     'weight/index',
     'sleep/index',
     'system/menu-config/index',
+    'calendar/index',
 ];
 
 export const layoutComponentOptions = [{

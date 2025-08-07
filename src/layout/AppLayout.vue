@@ -21,7 +21,7 @@
             </div>
 
             <!-- 主内容区 -->
-            <div class="content-wrapper">
+            <div class="content-wrapper" :class="{ 'is__frosted-glass': props.isFrostedGlass }">
                 <app-main />
             </div>
         </div>
@@ -40,6 +40,12 @@ import GlobalSettings from '@/components/GlobalSettings.vue';
 import { computed } from 'vue';
 
 const settingsStore = useSettingsStore();
+const props = defineProps({
+    isFrostedGlass: {
+        type: Boolean,
+        default: true
+    }
+});
 
 const settings = computed(() => {
 
@@ -115,10 +121,13 @@ $transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
     .content-wrapper {
         width: 100%;
         height: 100%;
-        @include frosted-glass();
-        @include elegant-border();
-        @include soft-shadow();
         border-radius: 12px;
+
+        &.is__frosted-glass {
+            @include frosted-glass();
+            @include elegant-border();
+            @include soft-shadow();
+        }
     }
 
     /* 折叠按钮 */
@@ -174,10 +183,13 @@ $transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
     .content-wrapper {
         margin: $gap;
         margin-top: calc(#{$gap} - 5px);
-        @include frosted-glass();
-        @include elegant-border();
-        @include soft-shadow();
         border-radius: 12px;
+
+        &.is__frosted-glass {
+            @include frosted-glass();
+            @include elegant-border();
+            @include soft-shadow();
+        }
     }
 
     .header-wrapper {

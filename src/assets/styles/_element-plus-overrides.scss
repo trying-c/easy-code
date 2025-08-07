@@ -329,3 +329,117 @@ body {
     }
   }
 }
+
+/*
+ * ===================================================================
+ * 6. 数据展示扩展 - 日历 (el-calendar) [v2 - 头部优化版]
+ * ===================================================================
+ */
+.el-calendar {
+  // 1. 整体容器风格 (保持不变)
+  @include m.frosted-glass;
+  @include m.elegant-border;
+  @include m.soft-shadow;
+  background-color: transparent !important;
+  border-radius: var(--app-border-radius-lg);
+  padding: var(--padding-base); // 增加内边距，让内容更舒展
+
+  // 2. 头部区域整体调整
+  .el-calendar__header {
+    // padding-bottom: var(--padding-base);
+    // border-bottom: 1px solid var(--app-border-color);
+    border-bottom: none; // 移除默认下边框
+    // padding: 1.5rem;
+    color: var(--app-glass-text-color);
+    // 使用 Flexbox 优化布局，确保标题和按钮组垂直居中对齐
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    // A. 标题样式
+    .el-calendar__title {
+      font-size: 1.1rem; // 稍微增大字号
+      font-weight: 600; // 加粗
+    }
+
+    // B. 按钮组样式
+    .el-calendar__button-group .el-button {
+      // 应用基础的玻璃和边框效果
+      @include m.frosted-glass(var(--app-input-bg-color), 8px);
+      @include m.elegant-border;
+
+      // 覆盖 Element Plus 默认按钮样式
+      background-color: transparent !important;
+      color: var(--app-glass-text-color) !important;
+      box-shadow: none !important;
+      transition: border-color var(--transition-duration) ease,
+        background-color var(--transition-duration) ease,
+        color var(--transition-duration) ease;
+
+      // 悬浮与聚焦状态
+      &:hover,
+      &:focus {
+        // 使用主题色的半透明变体作为背景，产生柔和光晕
+        background-color: hsla(
+          var(--el-color-primary-hue),
+          50%,
+          50%,
+          0.15
+        ) !important;
+        color: var(--el-color-primary) !important;
+        border-color: var(--el-color-primary) !important;
+      }
+    }
+  }
+
+  // 3. 星期表头样式 (保持不变)
+  .el-calendar__body thead th {
+    color: var(--app-glass-text-color);
+    padding: 1rem 0;
+    font-weight: 400;
+  }
+
+  // 4. 日期单元格样式 (保持不变)
+  .el-calendar-day {
+    height: auto;
+    min-height: 80px;
+    padding: 8px;
+    border-radius: var(--app-border-radius-sm);
+    transition: background-color var(--transition-duration) ease,
+      border-color var(--transition-duration) ease;
+    border: 1px solid transparent; // 预留边框位置，避免 hover 时跳动
+
+    &.next,
+    &.prev {
+      opacity: 0.4;
+      .el-calendar-day__p {
+        color: var(--app-glass-text-color);
+      }
+    }
+
+    .el-calendar-day__p {
+      color: var(--app-glass-text-color);
+    }
+
+    &:not(.is-selected):not(.is-today):hover {
+      background-color: hsla(var(--el-color-primary-hue), 50%, 50%, 0.1);
+    }
+
+    &.is-today {
+      border-color: var(--el-color-primary);
+      .el-calendar-day__p {
+        color: var(--el-color-primary) !important;
+        font-weight: 600;
+      }
+    }
+
+    &.is-selected {
+      background-color: var(--el-color-primary) !important;
+      border-color: var(--el-color-primary) !important;
+      .el-calendar-day__p {
+        color: #fff !important;
+        font-weight: 600;
+      }
+    }
+  }
+}

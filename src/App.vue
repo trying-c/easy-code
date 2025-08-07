@@ -1,6 +1,6 @@
 <template>
   <!-- 动态组件，根据计算出的布局组件名来渲染对应的布局 -->
-  <component :is="layoutComponent" :key="layoutName">
+  <component :is="layoutComponent" :key="layoutName" :is-frosted-glass="route.meta.isFrostedGlass">
     <!-- 路由视图现在被包裹在动态布局之内 -->
     <router-view />
   </component>
@@ -10,6 +10,7 @@
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSettingsStore } from '@/stores/settings';
+import { ro } from 'element-plus/es/locales.mjs';
 
 const AppLayout = defineAsyncComponent(() => import('./layout/AppLayout.vue'));
 const BlankLayout = defineAsyncComponent(() => import('./layout/BlankLayout.vue'));

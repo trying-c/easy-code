@@ -52,6 +52,12 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="毛玻璃">
+                                <el-switch v-model="item.meta.isFrostedGlass" active-text="开启" inactive-text="关闭"
+                                    inline-prompt />
+                            </el-form-item>
+                        </el-col>
 
 
                     </el-row>
@@ -91,6 +97,7 @@ import { computed } from 'vue';
 import draggable from 'vuedraggable';
 import { pageOptions, layoutComponentOptions, layoutModeOptions } from '../options';
 import { Plus, Delete } from '@element-plus/icons-vue';
+import { tr } from 'element-plus/es/locales.mjs';
 
 // 声明组件的 props 和 emits
 const props = defineProps({
@@ -107,6 +114,7 @@ const props = defineProps({
             meta: {
                 title: '',
                 icon: '',
+                isFrostedGlass: true,
                 enabled: true
             },
             children: []
